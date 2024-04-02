@@ -1,0 +1,23 @@
+[package]
+name = "whosaid-rs"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+dotenv = "0.15.0"
+serenity = { version = "0.12.0", features = ["default", "collector"] }
+async-trait = "0.1.77"
+tokio = { version = "1.36.0", features = ["macros", "rt-multi-thread"] }
+sqlx = { version = "0.7.3", features = ["runtime-tokio-rustls", "sqlite"] }
+anyhow = "1.0.79"
+thiserror = "1.0.56"
+sea-query = "0.30.7"
+sea-orm = { version = "0.12.14", features = ["sqlx-sqlite", "runtime-tokio-rustls", "macros", "with-chrono"] }
+sea-orm-cli = { version = "0.12.14", features = ["runtime-tokio-rustls"] }
+log = "0.4.20"
+entity = { path = "../entity" }
+migration = { path = "../migration" }
+tracing-subscriber = "0.3.18"
+tracing = "0.1.40"
