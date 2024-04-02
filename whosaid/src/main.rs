@@ -8,10 +8,10 @@ use dotenv::dotenv;
 use serenity::all::{Command, Interaction};
 use serenity::async_trait;
 use serenity::builder::{CreateInteractionResponse, CreateInteractionResponseMessage};
-use serenity::model::channel::Message;
+
 use serenity::model::gateway::Ready;
 use serenity::prelude::*;
-use tracing::{debug, error, info, Level};
+use tracing::{info, Level};
 
 use crate::database::Database;
 use crate::scrapper::Scrapper;
@@ -47,7 +47,7 @@ impl EventHandler for Bot {
     async fn ready(&self, ctx: Context, ready: Ready) {
         info!("{} is connected!", ready.user.name);
 
-        let guild_command =
+        let _guild_command =
             Command::set_global_commands(&ctx.http, vec![
                 commands::whosaid::register()
             ])

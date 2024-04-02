@@ -7,7 +7,7 @@ use entity::prelude::*;
 use crate::database::{Database, DatabaseError};
 
 impl Database {
-    pub async fn save_messages(&self, discord_messages: &Vec<DiscordMessage>) -> Result<(), DatabaseError> {
+    pub async fn save_messages(&self, discord_messages: &[DiscordMessage]) -> Result<(), DatabaseError> {
         let new_messages: Vec<entity::message::ActiveModel> = discord_messages
             .iter()
             .map(Self::map_message_to_active_model)
@@ -26,7 +26,7 @@ impl Database {
         }
     }
 
-    pub async fn get_random_messages(&self, guild_id: GuildId, n_messages: u32, minimum_length: u32, users: &Vec<entity::user::Model>) -> Result<Vec<entity::message::Model>, DatabaseError> {
+    pub async fn get_random_messages(&self, guild_id: GuildId, n_messages: u32, minimum_length: u32, users: &[entity::user::Model]) -> Result<Vec<entity::message::Model>, DatabaseError> {
         let select = Message::find()
             .join(JoinType::LeftJoin, entity::message::Relation::Channel.def())
             .filter(entity::channel::Column::GuildId.eq(i64::from(guild_id))).to_owned()
@@ -41,7 +41,7 @@ impl Database {
         Ok(entity::message::Model::find_by_statement(statement).all(&self.db).await?)
     }
 
-    pub async fn get_message(&self, message_id: MessageId) -> Result<entity::message::Model, DatabaseError> {
+    pub async fn _get_message(&self, message_id: MessageId) -> Result<entity::message::Model, DatabaseError> {
         Message::find_by_id(i64::from(message_id)).one(&self.db).await?.ok_or(DatabaseError::NotFound)
     }
 

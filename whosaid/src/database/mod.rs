@@ -27,6 +27,9 @@ pub enum DatabaseError {
 
 impl Database {
     pub async fn new() -> Result<Self> {
+        // TODO: proper handling of the database path
+        // - Use config file or flag
+        // - Handle postgres
 
         let mut db_path = workspace_dir();
         db_path.push("database.sqlite?mode=rwc");

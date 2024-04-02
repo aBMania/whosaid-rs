@@ -1,10 +1,10 @@
 use std::sync::Arc;
-use sea_orm::ModelTrait;
 
-use serenity::all::{Context, MessageId, GetMessages, GuildChannel, ChannelId, GuildId};
+
+use serenity::all::{Context, MessageId, GetMessages, GuildChannel};
 use tokio::sync::Semaphore;
 use tracing::{error, info};
-use entity::message::Model;
+
 
 use crate::database::Database;
 
@@ -25,12 +25,9 @@ impl Scrapper {
 
 impl Scrapper {
     pub async fn scrap(&self, ctx: &Context) {
-        let permit = match self.scrap_semaphore.try_acquire() {
-            Ok(permit) => permit,
-            Err(_) => {
-                info!("Scrapping already running, skipping");
-                return;
-            }
+        let Ok(permit) = self.scrap_semaphore.try_acquire() else {
+            info!("Scrapping already running, skipping");
+            return;
         };
 
         info!("Scrapping started");

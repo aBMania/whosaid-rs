@@ -1,6 +1,6 @@
-use sea_orm::{ActiveValue, ColumnTrait, ConnectionTrait, DbErr, EntityTrait, QueryFilter, FromQueryResult, QuerySelect, QueryTrait, RelationTrait, QueryResult, EntityName, QueryOrder};
-use sea_query::{Iden, JoinType, TableRef};
-use sea_query::Order::Desc;
+use sea_orm::{ActiveValue, ColumnTrait, DbErr, EntityTrait, QueryFilter, QuerySelect, RelationTrait, QueryOrder};
+use sea_query::{JoinType};
+
 use serenity::all::{GuildId, User as DiscordUser};
 
 use entity::prelude::*;

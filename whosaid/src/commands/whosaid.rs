@@ -1,4 +1,4 @@
-use std::fmt::Debug;
+
 use std::sync::Arc;
 use std::time::Duration;
 use serenity::all::CreateQuickModal;
@@ -105,7 +105,7 @@ pub async fn run(database: Arc<Database>, ctx: &Context, command_interaction: &C
         let fastest_msg = match responses.len() {
             0 => "No one found".to_string(),
             _ => {
-                let (fatest, fastest_delta) = responses.get(0).unwrap();
+                let (fatest, fastest_delta) = responses.first().unwrap();
                 let mut msg = format!("Fastest was {} in {}.{}s", fatest, fastest_delta.num_seconds(), fastest_delta.num_milliseconds() / 100);
                 msg.push_str("\ntest");
 
