@@ -4,7 +4,8 @@ use serenity::futures::TryFutureExt;
 
 use entity::prelude::*;
 
-use crate::database::{Database, DatabaseError};
+use crate::database::Database;
+use crate::database::error::DatabaseError;
 
 impl Database {
     pub async fn get_guilds(&self) -> Result<Vec<entity::guild::Model>, DatabaseError> {
@@ -18,7 +19,7 @@ impl Database {
         let new_guild = entity::guild::ActiveModel {
             id: ActiveValue::Set(discord_guild.id.into()),
             name: ActiveValue::Set(discord_guild.name.to_owned()),
-            owner_id: ActiveValue::Set(i64::from(discord_guild.owner_id))
+            owner_id: ActiveValue::Set(i64::from(discord_guild.owner_id)),
         };
 
         match Guild::insert(new_guild)

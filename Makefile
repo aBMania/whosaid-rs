@@ -162,3 +162,9 @@ vendor:
 # Runs `cargo udeps` to check for unused dependencies
 udeps:
 	cargo +$(PINNED_NIGHTLY) udeps --tests --all-targets --release --features "$(TEST_FEATURES)"
+
+install-sea-orm-cli:
+	cargo install sea-orm-cli
+
+generate-entity:
+	sea-orm-cli generate entity -u sqlite://database.sqlite?mode=rwc -o entity/src --date-time-crate chrono

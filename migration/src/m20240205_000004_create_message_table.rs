@@ -1,4 +1,5 @@
 use sea_orm_migration::prelude::*;
+use crate::m20240205_000001_create_user_table::User;
 
 use crate::m20240205_000003_create_channel_table::Channel;
 
@@ -32,13 +33,18 @@ impl MigrationTrait for Migration {
                         .not_null()
                     )
                     .col(ColumnDef::new(Message::Timestamp)
-                        .timestamp()
+                        .timestamp_with_time_zone()
                         .not_null()
                     )
                     .foreign_key(
                         ForeignKey::create()
                             .from(Message::Table, Message::ChannelId)
                             .to(Channel::Table, Channel::Id)
+                    )
+                    .foreign_key(
+                        ForeignKey::create()
+                            .from(Message::Table, Message::AuthorId)
+                            .to(User::Table, User::Id)
                     )
                     .to_owned(),
             )

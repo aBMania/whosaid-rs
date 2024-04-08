@@ -1,11 +1,11 @@
 [workspace]
 
 members = [
-"entity",
-"migration",
-"whosaid",
+    "entity",
+    "migration",
+    "whosaid",
 ]
 resolver = "2"
 
 [workspace.package]
-edition = "2021"
+edition = "2024"

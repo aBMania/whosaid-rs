@@ -1,16 +1,15 @@
-
+use serenity::all::CreateQuickModal;
 use std::sync::Arc;
 use std::time::Duration;
-use serenity::all::CreateQuickModal;
 
+use crate::database::Database;
+use crate::game::Game;
 use serenity::builder::*;
 use serenity::futures::stream::StreamExt;
 use serenity::model::prelude::*;
 use serenity::prelude::*;
 use sqlx::types::chrono::Local;
 use tokio::time::sleep;
-use crate::database::Database;
-use crate::game::Game;
 
 pub async fn run(database: Arc<Database>, ctx: &Context, command_interaction: &CommandInteraction) -> anyhow::Result<()> {
     let guild_id = match command_interaction.guild_id {
@@ -59,7 +58,7 @@ pub async fn run(database: Arc<Database>, ctx: &Context, command_interaction: &C
     let game = Game::new(database, guild_id, n_questions, minimum_quote_length).await?;
 
     let message = CreateInteractionResponse::Message(CreateInteractionResponseMessage::new()
-        .content(format!("New game started with {} questions with a min quote length of {}", n_question, minimum_quote_length))
+        .content(format!("New game started with {} questions with a minimum quote length of {}", n_question, minimum_quote_length))
     );
 
     response.interaction.create_response(&ctx, message).await?;
@@ -95,23 +94,29 @@ pub async fn run(database: Arc<Database>, ctx: &Context, command_interaction: &C
 
             let id = &interaction.data.custom_id;
 
-            if id.eq(&quote.author_id.to_string()) {
-                responses.push((interaction.user.to_string(), dt));
+            if quote.author_id == id.parse().ok() {
+                responses.push((interaction.user.mention(), dt));
             }
 
             interaction.create_response(&ctx, CreateInteractionResponse::Acknowledge).await?;
         }
 
-        let fastest_msg = match responses.len() {
+        let scores_msg = match responses.len() {
             0 => "No one found".to_string(),
             _ => {
-                let (fatest, fastest_delta) = responses.first().unwrap();
-                let mut msg = format!("Fastest was {} in {}.{}s", fatest, fastest_delta.num_seconds(), fastest_delta.num_milliseconds() / 100);
-                msg.push_str("\ntest");
+                let (username, delta) = responses.first().unwrap();
+                let mut msg = format!(":confetti_ball: Fastest was {} in {}.{}s", username, delta.num_seconds(), delta.num_milliseconds() / 100);
+
+                for (username, delta) in responses.iter().skip(1).take(9) {
+                    let line = format!("\n{}: {}.{}s", username, delta.num_seconds(), delta.num_milliseconds() / 100);
+                    msg.push_str(&*line);
+                }
 
                 msg
             }
         };
+
+        let quote_author_representation = game.users().iter().find(|u| quote.author_id == Some(u.id)).map_or("???", |u| &*u.name);
 
         message.edit(&ctx, EditMessage::new()
             .content(format!(r#"
@@ -120,8 +125,11 @@ Question {}: Who said this ?
 ---
 
 Answer was: {}
-{fastest_msg}"#
-                             , i + 1, quote.content, quote.author_id))
+
+---
+
+{scores_msg}"#
+                             , i + 1, quote.content, quote_author_representation))
             .components(vec![]),
         ).await?;
 

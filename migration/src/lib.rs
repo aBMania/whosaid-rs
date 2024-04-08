@@ -6,6 +6,8 @@ mod m20240205_000001_create_user_table;
 mod m20240205_000002_create_guild_table;
 mod m20240205_000003_create_channel_table;
 mod m20240205_000004_create_message_table;
+mod m20240407_000001_create_user_emoji_table;
+mod m20250411_000001_make_msg_author_nilable;
 
 pub struct Migrator;
 
@@ -17,6 +19,8 @@ impl MigratorTrait for Migrator {
             Box::new(m20240205_000002_create_guild_table::Migration),
             Box::new(m20240205_000003_create_channel_table::Migration),
             Box::new(m20240205_000004_create_message_table::Migration),
+            Box::new(m20240407_000001_create_user_emoji_table::Migration),
+            Box::new(m20250411_000001_make_msg_author_nilable::Migration),
         ]
     }
 }

@@ -49,7 +49,8 @@ impl EventHandler for Bot {
 
         let _guild_command =
             Command::set_global_commands(&ctx.http, vec![
-                commands::whosaid::register()
+                commands::whosaid::register(),
+                commands::emoji::register()
             ])
                 .await;
 
@@ -76,11 +77,15 @@ impl EventHandler for Bot {
     // simultaneously.
     async fn interaction_create(&self, ctx: Context, interaction: Interaction) {
         if let Interaction::Command(command) = interaction {
-            println!("Received command interaction: {command:#?}");
+            //  println!("Received command interaction: {command:#?}");
 
             let content = match command.data.name.as_str() {
                 "whosaid" => {
                     commands::whosaid::run(self.database.clone(), &ctx, &command).await.unwrap();
+                    None
+                },
+                "emoji" => {
+                    commands::emoji::run(self.database.clone(), &ctx, &command).await.unwrap();
                     None
                 },
                 _ => Some("not implemented :(".to_string()),

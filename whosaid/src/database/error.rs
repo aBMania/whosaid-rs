@@ -4,4 +4,7 @@ use sea_orm::DbErr;
 pub enum DatabaseError {
     #[error("database error: {0}")]
     DbError(#[from] DbErr),
+
+    #[error("Not found")]
+    NotFound
 }

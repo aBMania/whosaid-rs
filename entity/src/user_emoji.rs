@@ -3,48 +3,44 @@
 use sea_orm::entity::prelude::*;
 
 #[derive(Clone, Debug, PartialEq, DeriveEntityModel, Eq)]
-#[sea_orm(table_name = "guild")]
+#[sea_orm(table_name = "user_emoji")]
 pub struct Model {
     #[sea_orm(primary_key, auto_increment = false)]
-    pub id: i64,
-    pub name: String,
-    pub owner_id: i64,
+    pub user_id: i64,
+    #[sea_orm(primary_key, auto_increment = false)]
+    pub guild_id: i64,
+    pub emoji: String,
 }
 
 #[derive(Copy, Clone, Debug, EnumIter, DeriveRelation)]
 pub enum Relation {
-    #[sea_orm(has_many = "super::channel::Entity")]
-    Channel,
+    #[sea_orm(
+        belongs_to = "super::guild::Entity",
+        from = "Column::GuildId",
+        to = "super::guild::Column::Id",
+        on_update = "NoAction",
+        on_delete = "NoAction"
+    )]
+    Guild,
     #[sea_orm(
         belongs_to = "super::user::Entity",
-        from = "Column::OwnerId",
+        from = "Column::UserId",
         to = "super::user::Column::Id",
         on_update = "NoAction",
         on_delete = "NoAction"
     )]
     User,
-    #[sea_orm(has_many = "super::user_emoji::Entity")]
-    UserEmoji,
 }
 
-impl Related<super::channel::Entity> for Entity {
+impl Related<super::guild::Entity> for Entity {
     fn to() -> RelationDef {
-        Relation::Channel.def()
-    }
-}
-
-impl Related<super::user_emoji::Entity> for Entity {
-    fn to() -> RelationDef {
-        Relation::UserEmoji.def()
+        Relation::Guild.def()
     }
 }
 
 impl Related<super::user::Entity> for Entity {
     fn to() -> RelationDef {
-        super::user_emoji::Relation::User.def()
-    }
-    fn via() -> Option<RelationDef> {
-        Some(super::user_emoji::Relation::Guild.def().rev())
+        Relation::User.def()
     }
 }
 

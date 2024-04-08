@@ -1,12 +1,12 @@
 use std::time::Duration;
 
 use anyhow::Result;
-use sea_orm::{ConnectOptions, Database as SeaOrmDatabase, DatabaseConnection, DbErr};
+use sea_orm::{ConnectOptions, Database as SeaOrmDatabase, DatabaseConnection};
 
 use crate::utils::workspace_dir;
 
-mod user;
-mod error;
+pub(crate) mod user;
+pub(crate) mod error;
 mod guild;
 mod channel;
 mod messages;
@@ -16,26 +16,9 @@ pub struct Database {
 }
 
 
-#[derive(Debug, thiserror::Error)]
-pub enum DatabaseError {
-    #[error("database error: {0}")]
-    DbError(#[from] DbErr),
-
-    #[error("Not found")]
-    NotFound
-}
-
 impl Database {
     pub async fn new() -> Result<Self> {
-        // TODO: proper handling of the database path
-        // - Use config file or flag
-        // - Handle postgres
-
-        let mut db_path = workspace_dir();
-        db_path.push("database.sqlite?mode=rwc");
-
-        let db_path = db_path.to_str().unwrap();
-        let db_url = format!("sqlite://{db_path}");
+        let db_url = "postgres://postgres:whosaidp@localhost:15432/whosaid";
 
         let mut opt = ConnectOptions::new(db_url);
 
@@ -49,7 +32,7 @@ impl Database {
             .sqlx_logging_level(log::LevelFilter::Info)
             .set_schema_search_path("whosaid"); // Setting default PostgreSQL schema
 
-        let db = SeaOrmDatabase::connect(opt).await?;
+        let db = SeaOrmDatabase::connect(db_url).await?;
 
 
         migration::migrate(&db).await.expect("migration failed");

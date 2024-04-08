@@ -1,7 +1,8 @@
+use std::collections::HashSet;
 use std::sync::Arc;
 
 
-use serenity::all::{Context, MessageId, GetMessages, GuildChannel};
+use serenity::all::{Context, MessageId, GetMessages, GuildChannel, Member, User};
 use tokio::sync::Semaphore;
 use tracing::{error, info};
 
@@ -60,7 +61,7 @@ impl Scrapper {
                 .map(|member| &member.user)
                 .collect();
 
-            self.database.save_users(guild_users).await?;
+            self.database.save_users(&guild_users).await?;
             self.database.save_guild(&partial_guild).await?;
 
             let channels: Vec<GuildChannel> = ctx.http.get_channels(guild.id).await?
@@ -69,8 +70,10 @@ impl Scrapper {
                 .collect();
             self.database.save_channels(&channels).await?;
 
+            let guild_users: HashSet<_> = guild_users.into_iter().collect();
+
             for channel in channels {
-                match self.scrap_channel(ctx, &channel).await {
+                match self.scrap_channel(ctx, &channel, &guild_users).await {
                     Ok(_) => {
                         info!("Scrapped channel {} from guild {}", channel.name, guild.name);
                     }
@@ -84,7 +87,7 @@ impl Scrapper {
         Ok(())
     }
 
-    async fn scrap_channel(&self, ctx: &Context, channel: &GuildChannel) -> anyhow::Result<()> {
+    async fn scrap_channel(&self, ctx: &Context, channel: &GuildChannel, guild_users: &HashSet<&User>) -> anyhow::Result<()> {
         let db_channel = self.database.get_channel(channel.id).await?;
 
         let mut backfill_done = db_channel.backfill_done;
@@ -98,12 +101,12 @@ impl Scrapper {
             };
 
             let messages = channel.messages(&ctx, builder).await?;
-
+            
             if messages.is_empty() {
                 backfill_done = true;
                 self.database.set_channel_backfilled(channel.id).await?;
             } else {
-                self.database.save_messages(&messages).await?;
+                self.database.save_messages(&messages, guild_users).await?;
             }
         }
 
@@ -120,7 +123,7 @@ impl Scrapper {
             if messages.is_empty() {
                 break;
             } else {
-                self.database.save_messages(&messages).await?;
+                self.database.save_messages(&messages, guild_users).await?;
             }
         }
 
