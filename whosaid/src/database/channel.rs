@@ -1,14 +1,15 @@
+use sea_orm::QueryOrder;
 use sea_orm::ActiveValue::Set;
 use sea_orm::{
-    ColumnTrait, DbErr, EntityTrait, QueryFilter, QueryOrder, QuerySelect, RelationTrait,
+    DbErr, EntityTrait, QueryFilter,
 };
-use sea_query::{Expr, JoinType};
-use serenity::all::{ChannelId, GuildChannel as DiscordChannel, GuildId};
+use sea_query::Expr;
+use serenity::all::{ChannelId, GuildChannel as DiscordChannel};
 
-use crate::database::Database;
 use crate::database::error::DatabaseError;
+use crate::database::Database;
 use entity::prelude::*;
-use entity::{channel, message, user};
+use entity::{channel, message};
 
 impl Database {
     pub async fn _save_channel(
@@ -51,17 +52,6 @@ impl Database {
             Err(DbErr::RecordNotInserted) => Ok(()),
             Err(err) => Err(DatabaseError::from(err)),
         }
-    }
-
-    pub async fn get_guild_users(
-        &self,
-        guild_id: GuildId,
-    ) -> Result<Vec<user::Model>, DatabaseError> {
-        Ok(User::find()
-            .join(JoinType::LeftJoin, user::Relation::Guild.def())
-            .filter(entity::guild::Column::Id.eq(i64::from(guild_id)))
-            .all(&self.db)
-            .await?)
     }
 
     pub async fn get_channel(

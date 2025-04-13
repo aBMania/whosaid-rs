@@ -1,7 +1,7 @@
 use std::collections::HashSet;
 use std::sync::Arc;
 
-use serenity::all::{Context, GetMessages, GuildChannel, Member, MessageId, User};
+use serenity::all::{Context, GetMessages, GuildChannel, MessageId, User};
 use tokio::sync::Semaphore;
 use tracing::{error, info};
 

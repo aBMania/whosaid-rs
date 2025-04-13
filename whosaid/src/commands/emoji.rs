@@ -44,7 +44,7 @@ pub async fn run(
     let emoji = guild
         .emojis
         .iter()
-        .find(|&(_, emoji)| &emoji.name == emoji_name);
+        .find(|&(_, emoji)| emoji.name == *emoji_name);
 
     if emoji.is_none() {
         return Err(EmojiError::UnknownEmoji().into());

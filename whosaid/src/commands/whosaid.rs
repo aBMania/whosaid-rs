@@ -129,7 +129,7 @@ pub async fn run(
                         delta.num_seconds(),
                         delta.num_milliseconds() / 100
                     );
-                    msg.push_str(&*line);
+                    msg.push_str(&line);
                 }
 
                 msg

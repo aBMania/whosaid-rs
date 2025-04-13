@@ -19,7 +19,6 @@ use crate::scrapper::Scrapper;
 mod commands;
 mod database;
 mod scrapper;
-mod utils;
 
 mod game;
 

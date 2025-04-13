@@ -14,10 +14,10 @@ use crate::database::error::DatabaseError;
 pub struct UserWithEmoji {
     pub(crate) id: i64,
     pub(crate) name: String,
-    pub(crate) discriminator: Option<u32>,
-    pub(crate) global_name: Option<String>,
-    pub(crate) bot: Option<bool>,
-    pub(crate) emoji: String,
+    // pub(crate) discriminator: Option<u32>,
+    // pub(crate) global_name: Option<String>,
+    // pub(crate) bot: Option<bool>,
+    // pub(crate) emoji: String,
 }
 
 impl Database {
