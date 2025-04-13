@@ -1,7 +1,7 @@
 use std::sync::Arc;
 use std::time::Duration;
 
-use serenity::all::{CreateQuickModal};
+use serenity::all::CreateQuickModal;
 use serenity::builder::*;
 use serenity::model::prelude::*;
 use serenity::prelude::*;
@@ -16,15 +16,15 @@ pub enum EmojiError {
     UnknownEmoji(),
 }
 
-pub async fn run(database: Arc<Database>, ctx: &Context, command_interaction: &CommandInteraction) -> anyhow::Result<()> {
+pub async fn run(
+    database: Arc<Database>,
+    ctx: &Context,
+    command_interaction: &CommandInteraction,
+) -> anyhow::Result<()> {
     let modal = CreateQuickModal::new("Your emoji")
         .timeout(Duration::from_secs(60))
         .field(
-            CreateInputText::new(
-                InputTextStyle::Short,
-                "Emoji",
-                "emoji",
-            ).value(":lj:".to_owned()),
+            CreateInputText::new(InputTextStyle::Short, "Emoji", "emoji").value(":lj:".to_owned()),
         );
     let response = command_interaction.quick_modal(ctx, modal).await?.unwrap();
 
@@ -35,28 +35,38 @@ pub async fn run(database: Arc<Database>, ctx: &Context, command_interaction: &C
     emoji_name = emoji_name.strip_prefix(':').unwrap_or(emoji_name);
     emoji_name = emoji_name.strip_suffix(':').unwrap_or(emoji_name);
 
-    let guild = command_interaction.guild_id.unwrap().to_partial_guild(&ctx.http).await?;
+    let guild = command_interaction
+        .guild_id
+        .unwrap()
+        .to_partial_guild(&ctx.http)
+        .await?;
 
-    let emoji = guild.emojis
+    let emoji = guild
+        .emojis
         .iter()
-        .find(|&(_, emoji)| {
-            &emoji.name == emoji_name
-        });
+        .find(|&(_, emoji)| &emoji.name == emoji_name);
 
     if emoji.is_none() {
-        return Err(EmojiError::UnknownEmoji().into())
+        return Err(EmojiError::UnknownEmoji().into());
     }
 
     if command_interaction.guild_id.is_none() {
-        return Err(EmojiError::NotInAGuild().into())
+        return Err(EmojiError::NotInAGuild().into());
     }
 
     let (_, emoji) = emoji.unwrap();
 
-    database.save_user_emoji(command_interaction.user.id, command_interaction.guild_id.unwrap(), &format!("{}", &emoji)).await?;
+    database
+        .save_user_emoji(
+            command_interaction.user.id,
+            command_interaction.guild_id.unwrap(),
+            &format!("{}", &emoji),
+        )
+        .await?;
 
-    let message = CreateInteractionResponse::Message(CreateInteractionResponseMessage::new()
-        .content(format!("Your emoji has been set to {}", emoji))
+    let message = CreateInteractionResponse::Message(
+        CreateInteractionResponseMessage::new()
+            .content(format!("Your emoji has been set to {}", emoji)),
     );
 
     response.interaction.create_response(&ctx, message).await?;
@@ -65,6 +75,5 @@ pub async fn run(database: Arc<Database>, ctx: &Context, command_interaction: &C
 }
 
 pub fn register() -> CreateCommand {
-    CreateCommand::new("emoji")
-        .description("Set your emoji for whosaid")
+    CreateCommand::new("emoji").description("Set your emoji for whosaid")
 }

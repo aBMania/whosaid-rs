@@ -7,8 +7,8 @@ use serenity::all::{GuildId, User as DiscordUser, UserId};
 
 use entity::prelude::*;
 
-use crate::database::error::DatabaseError;
 use crate::database::Database;
+use crate::database::error::DatabaseError;
 
 #[derive(FromQueryResult)]
 pub struct UserWithEmoji {

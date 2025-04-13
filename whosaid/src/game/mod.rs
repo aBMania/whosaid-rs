@@ -2,7 +2,7 @@ use std::sync::Arc;
 
 use serenity::all::GuildId;
 
-use entity::{message};
+use entity::message;
 
 use crate::database::Database;
 use crate::database::error::DatabaseError;
@@ -20,22 +20,20 @@ impl Game {
         n_questions: u32,
         minimum_quote_length: u32,
     ) -> Result<Self, DatabaseError> {
-        let users = database.get_most_active_users_with_emoji(
-            guild_id,
-            1,
-        ).await?;
+        let users = database
+            .get_most_active_users_with_emoji(guild_id, 1)
+            .await?;
 
-        let quotes = database.get_random_messages(
-            guild_id,
-            n_questions,
-            minimum_quote_length,
-            users.iter().map(|u| u.id).collect(),
-        ).await?;
+        let quotes = database
+            .get_random_messages(
+                guild_id,
+                n_questions,
+                minimum_quote_length,
+                users.iter().map(|u| u.id).collect(),
+            )
+            .await?;
 
-        Ok(Self {
-            quotes,
-            users,
-        })
+        Ok(Self { quotes, users })
     }
 
     pub fn messages(&self) -> &Vec<message::Model> {

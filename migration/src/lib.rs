@@ -1,6 +1,6 @@
-use std::error::Error;
-pub use sea_orm_migration::prelude::*;
 use crate::sea_orm::DbConn;
+pub use sea_orm_migration::prelude::*;
+use std::error::Error;
 
 mod m20240205_000001_create_user_table;
 mod m20240205_000002_create_guild_table;
@@ -25,9 +25,7 @@ impl MigratorTrait for Migrator {
     }
 }
 
-pub async fn migrate(
-    db: &DbConn,
-) -> Result<(), Box<dyn Error>> {
+pub async fn migrate(db: &DbConn) -> Result<(), Box<dyn Error>> {
     Migrator::up(db, None).await?;
     Ok(())
 }

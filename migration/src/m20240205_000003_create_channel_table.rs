@@ -7,7 +7,6 @@ pub struct Migration;
 
 #[async_trait::async_trait]
 impl MigrationTrait for Migration {
-
     async fn up(&self, manager: &SchemaManager) -> Result<(), DbErr> {
         manager
             .create_table(
@@ -20,31 +19,23 @@ impl MigrationTrait for Migration {
                             .not_null()
                             .primary_key(),
                     )
-                    .col(ColumnDef::new(Channel::Name)
-                        .string()
-                        .not_null()
-                    )
-                    .col(ColumnDef::new(Channel::GuildId)
-                        .big_unsigned()
-                        .not_null()
-                    )
-                    .col(ColumnDef::new(Channel::LastMessageId)
-                        .big_unsigned()
-                    )
-                    .col(ColumnDef::new(Channel::BackfillDone)
-                        .boolean()
-                        .not_null()
-                        .default(false)
+                    .col(ColumnDef::new(Channel::Name).string().not_null())
+                    .col(ColumnDef::new(Channel::GuildId).big_unsigned().not_null())
+                    .col(ColumnDef::new(Channel::LastMessageId).big_unsigned())
+                    .col(
+                        ColumnDef::new(Channel::BackfillDone)
+                            .boolean()
+                            .not_null()
+                            .default(false),
                     )
                     .foreign_key(
                         ForeignKey::create()
                             .from(Channel::Table, Channel::GuildId)
-                            .to(Guild::Table, Guild::Id)
+                            .to(Guild::Table, Guild::Id),
                     )
                     .to_owned(),
             )
             .await
-
     }
 
     async fn down(&self, manager: &SchemaManager) -> Result<(), DbErr> {

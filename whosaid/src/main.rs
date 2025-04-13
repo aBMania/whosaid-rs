@@ -11,15 +11,15 @@ use serenity::builder::{CreateInteractionResponse, CreateInteractionResponseMess
 
 use serenity::model::gateway::Ready;
 use serenity::prelude::*;
-use tracing::{info, Level};
+use tracing::{Level, info};
 
 use crate::database::Database;
 use crate::scrapper::Scrapper;
 
-mod database;
-mod utils;
-mod scrapper;
 mod commands;
+mod database;
+mod scrapper;
+mod utils;
 
 mod game;
 
@@ -47,13 +47,11 @@ impl EventHandler for Bot {
     async fn ready(&self, ctx: Context, ready: Ready) {
         info!("{} is connected!", ready.user.name);
 
-        let _guild_command =
-            Command::set_global_commands(&ctx.http, vec![
-                commands::whosaid::register(),
-                commands::emoji::register()
-            ])
-                .await;
-
+        let _guild_command = Command::set_global_commands(
+            &ctx.http,
+            vec![commands::whosaid::register(), commands::emoji::register()],
+        )
+        .await;
 
         let ctx = Arc::new(ctx);
 
@@ -81,13 +79,17 @@ impl EventHandler for Bot {
 
             let content = match command.data.name.as_str() {
                 "whosaid" => {
-                    commands::whosaid::run(self.database.clone(), &ctx, &command).await.unwrap();
+                    commands::whosaid::run(self.database.clone(), &ctx, &command)
+                        .await
+                        .unwrap();
                     None
-                },
+                }
                 "emoji" => {
-                    commands::emoji::run(self.database.clone(), &ctx, &command).await.unwrap();
+                    commands::emoji::run(self.database.clone(), &ctx, &command)
+                        .await
+                        .unwrap();
                     None
-                },
+                }
                 _ => Some("not implemented :(".to_string()),
             };
 
@@ -123,13 +125,10 @@ async fn main() -> Result<()> {
 
     let bot = Bot::new().await?;
 
-
     // Create a new instance of the Client, logging in as a bot. This will automatically prepend
     // your bot token with "Bot ", which is a requirement by Discord for bot users.
 
-    let mut client =
-        Client::builder(&token, intents)
-            .event_handler(bot).await?;
+    let mut client = Client::builder(&token, intents).event_handler(bot).await?;
 
     // Finally, start a single shard, and start listening to events.
     //

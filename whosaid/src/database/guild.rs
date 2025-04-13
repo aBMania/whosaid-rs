@@ -26,9 +26,11 @@ impl Database {
             .on_conflict(
                 sea_query::OnConflict::column(entity::guild::Column::Id)
                     .do_nothing()
-                    .to_owned()
+                    .to_owned(),
             )
-            .exec(&self.db).await {
+            .exec(&self.db)
+            .await
+        {
             Ok(_) => Ok(()),
             Err(DbErr::RecordNotInserted) => Ok(()),
             Err(err) => Err(DatabaseError::from(err)),

@@ -12,10 +12,7 @@ impl MigrationTrait for Migration {
             .alter_table(
                 Table::alter()
                     .table(Message::Table)
-                    .modify_column(
-                        ColumnDef::new(Message::AuthorId)
-                            .null()
-                    )
+                    .modify_column(ColumnDef::new(Message::AuthorId).null())
                     .to_owned(),
             )
             .await
@@ -26,10 +23,7 @@ impl MigrationTrait for Migration {
             .alter_table(
                 Table::alter()
                     .table(Message::Table)
-                    .modify_column(
-                        ColumnDef::new(Message::AuthorId)
-                            .not_null()
-                    )
+                    .modify_column(ColumnDef::new(Message::AuthorId).not_null())
                     .to_owned(),
             )
             .await

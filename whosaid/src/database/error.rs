@@ -6,5 +6,5 @@ pub enum DatabaseError {
     DbError(#[from] DbErr),
 
     #[error("Not found")]
-    NotFound
+    NotFound,
 }
