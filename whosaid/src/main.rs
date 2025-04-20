@@ -116,7 +116,7 @@ async fn main() -> Result<()> {
     info!("This will be logged to stdout");
 
     // Configure the client with your Discord bot token in the environment.
-    let token = env::var("DISCORD_TOKEN").expect("Expected a token in the environment");
+    let token = env::var("WHOSAID_DISCORD_TOKEN").expect("Expected WHOSAID_DISCORD_TOKEN in the environment");
     // Set gateway intents, which decides what events the bot will be notified about
     let intents = GatewayIntents::GUILD_MESSAGES
         | GatewayIntents::DIRECT_MESSAGES
