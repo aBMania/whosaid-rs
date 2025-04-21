@@ -19,9 +19,10 @@ impl Game {
         guild_id: GuildId,
         n_questions: u32,
         minimum_quote_length: u32,
+        n_most_active_users: u32,
     ) -> Result<Self, DatabaseError> {
         let users = database
-            .get_most_active_users_with_emoji(guild_id, 1)
+            .get_most_active_users_with_emoji(guild_id, n_most_active_users)
             .await?;
 
         let quotes = database

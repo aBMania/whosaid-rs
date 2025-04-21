@@ -65,7 +65,6 @@ impl Database {
         let select = User::find()
             .join_rev(JoinType::LeftJoin, entity::message::Relation::User.def())
             .join(JoinType::LeftJoin, entity::message::Relation::Channel.def())
-            .join(JoinType::LeftJoin, entity::user::Relation::UserEmoji.def())
             .filter(entity::channel::Column::GuildId.eq(i64::from(guild_id)))
             .filter(entity::user::Column::Bot.eq(false))
             .group_by(entity::user::Column::Id)

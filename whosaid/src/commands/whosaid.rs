@@ -36,16 +36,25 @@ pub async fn run(
                 "minimum_quote_length",
             )
             .value("10".to_owned()),
+        )
+        .field(
+            CreateInputText::new(
+                InputTextStyle::Short,
+                "Number of possible responses",
+                "n_most_active_users",
+            )
+            .value("13".to_owned()),
         );
 
     let response = command_interaction.quick_modal(ctx, modal).await?.unwrap();
     let inputs = response.inputs;
-    let (n_question, minimum_quote_length) = (&inputs[0], &inputs[1]);
+    let (n_question, minimum_quote_length, n_most_active_users) = (&inputs[0], &inputs[1], &inputs[2]);
 
     let n_questions = n_question.parse::<u32>();
     let minimum_quote_length = minimum_quote_length.parse::<u32>();
+    let n_most_active_users = n_most_active_users.parse::<u32>();
 
-    if n_questions.is_err() || minimum_quote_length.is_err() {
+    if n_questions.is_err() || minimum_quote_length.is_err() || n_most_active_users.is_err() {
         let message = CreateInteractionResponse::Message(
             CreateInteractionResponseMessage::new().content("Invalid parameters"),
         );
@@ -54,10 +63,11 @@ pub async fn run(
         return Ok(());
     }
 
-    let n_questions = n_questions.unwrap();
-    let minimum_quote_length = minimum_quote_length.unwrap();
+    let n_questions = n_questions?;
+    let minimum_quote_length = minimum_quote_length?;
+    let n_most_active_users = n_most_active_users?;
 
-    let game = Game::new(database, guild_id, n_questions, minimum_quote_length).await?;
+    let game = Game::new(database, guild_id, n_questions, minimum_quote_length, n_most_active_users).await?;
 
     let message = CreateInteractionResponse::Message(
         CreateInteractionResponseMessage::new().content(format!(
@@ -85,10 +95,13 @@ pub async fn run(
 
         for user in users {
             message =
-                message.button(CreateButton::new(user.id.to_string()).label(user.name.to_string()));
+                message
+                    .button(CreateButton::new(user.id.to_string())
+                    .label(user.name.to_string()));
         }
 
-        let mut message = command_interaction.create_followup(ctx, message).await?;
+        let mut message = command_interaction
+            .create_followup(ctx, message).await?;
 
         let mut interaction_stream = message
             .await_component_interaction(&ctx.shard)
@@ -96,7 +109,7 @@ pub async fn run(
             .stream();
 
         let mut responses: Vec<(_, _)> = vec![];
-
+        
         while let Some(interaction) = interaction_stream.next().await {
             let dt = Local::now().signed_duration_since(*message.timestamp);
 
