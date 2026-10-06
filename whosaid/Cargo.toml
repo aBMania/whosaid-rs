@@ -12,7 +12,7 @@ async-trait = "0.1.88"
 tokio = { version = "1.36.0", features = ["macros", "rt-multi-thread"] }
 sqlx = { version = "0.8.3", features = ["runtime-tokio-rustls", "postgres"] }
 anyhow = "1.0.79"
-itertools = "0.14.0"
+itertools = "0.15.0"
 thiserror = "2.0.12"
 sea-query = "0.32.3"
 sea-orm = { version = "1.1.8", features = ["sqlx-postgres", "runtime-tokio-rustls", "macros", "with-chrono"] }
