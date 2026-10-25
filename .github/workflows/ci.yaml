@@ -13,7 +13,10 @@ jobs:
   build_and_test:
     name: Rust project - latest
     runs-on: ubuntu-latest
+    # beta/nightly are early warnings: only stable (what the Dockerfile builds with) gates the image
+    continue-on-error: ${{ matrix.toolchain != 'stable' }}
     strategy:
+      fail-fast: false
       matrix:
         toolchain:
           - stable
