@@ -13,8 +13,9 @@ RUN cargo chef cook --release --target x86_64-unknown-linux-musl --recipe-path r
 COPY . .
 RUN cargo build --release --target x86_64-unknown-linux-musl --bin whosaid-rs
 
-FROM alpine AS runtime
-RUN addgroup -S bot && adduser -S bot -G bot
+FROM alpine:3.24 AS runtime
+# apk upgrade: security fixes released after the base image was built
+RUN apk upgrade --no-cache && addgroup -S bot && adduser -S bot -G bot
 COPY --from=builder /app/target/x86_64-unknown-linux-musl/release/whosaid-rs /usr/local/bin/
 USER bot
 CMD ["/usr/local/bin/whosaid-rs"]
