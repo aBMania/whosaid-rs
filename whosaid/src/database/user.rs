@@ -1,8 +1,8 @@
+use sea_orm::sea_query::JoinType;
 use sea_orm::{
     ActiveValue, ColumnTrait, DbErr, EntityTrait, FromQueryResult, QueryFilter, QueryOrder,
     QuerySelect, RelationTrait,
 };
-use sea_query::JoinType;
 use serenity::all::{GuildId, User as DiscordUser, UserId};
 
 use entity::prelude::*;
@@ -24,7 +24,7 @@ impl Database {
     pub async fn save_user(&self, discord_user: &DiscordUser) -> Result<(), DatabaseError> {
         match User::insert(Self::map_user_to_active_model(discord_user))
             .on_conflict(
-                sea_query::OnConflict::column(entity::user::Column::Id)
+                sea_orm::sea_query::OnConflict::column(entity::user::Column::Id)
                     .do_nothing()
                     .to_owned(),
             )
@@ -44,7 +44,7 @@ impl Database {
 
         match User::insert_many(new_users)
             .on_conflict(
-                sea_query::OnConflict::column(entity::user::Column::Id)
+                sea_orm::sea_query::OnConflict::column(entity::user::Column::Id)
                     .do_nothing()
                     .to_owned(),
             )
@@ -91,7 +91,7 @@ impl Database {
 
         match UserEmoji::insert(user_emoji)
             .on_conflict(
-                sea_query::OnConflict::columns([
+                sea_orm::sea_query::OnConflict::columns([
                     entity::user_emoji::Column::UserId,
                     entity::user_emoji::Column::GuildId,
                 ])

@@ -24,7 +24,7 @@ impl Database {
 
         match Guild::insert(new_guild)
             .on_conflict(
-                sea_query::OnConflict::column(entity::guild::Column::Id)
+                sea_orm::sea_query::OnConflict::column(entity::guild::Column::Id)
                     .do_nothing()
                     .to_owned(),
             )
