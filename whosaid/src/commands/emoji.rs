@@ -60,7 +60,7 @@ pub async fn run(
         .save_user_emoji(
             command_interaction.user.id,
             command_interaction.guild_id.unwrap(),
-            &format!("{}", &emoji),
+            &format!("{}", emoji),
         )
         .await?;
 

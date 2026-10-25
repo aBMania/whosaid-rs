@@ -18,7 +18,8 @@ impl MigrationTrait for Migration {
                             .primary_key(),
                     )
                     .col(ColumnDef::new(User::Name).string().not_null())
-                    .col(ColumnDef::new(User::Discriminator).unsigned())
+                    // integer, as created in production: sea-query 1 maps unsigned() to bigint on Postgres
+                    .col(ColumnDef::new(User::Discriminator).integer())
                     .col(ColumnDef::new(User::GlobalName).string())
                     .col(ColumnDef::new(User::Bot).boolean())
                     .to_owned(),

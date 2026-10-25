@@ -1,9 +1,9 @@
 use itertools::Itertools;
+use sea_orm::sea_query::{Expr, ExprTrait, Func, JoinType, Order, SimpleExpr};
 use sea_orm::{
-    ActiveValue, ColumnTrait, ConnectionTrait, DbErr, EntityTrait, FromQueryResult, QueryFilter,
-    QuerySelect, QueryTrait, RelationTrait,
+    ActiveValue, ColumnTrait, DbErr, EntityTrait, FromQueryResult, QueryFilter, QuerySelect,
+    QueryTrait, RelationTrait,
 };
-use sea_query::{Expr, Func, JoinType, Order, SimpleExpr};
 use serenity::all::{GuildId, Message as DiscordMessage, MessageId};
 use std::collections::HashSet;
 
@@ -25,7 +25,7 @@ impl Database {
 
         match Message::insert_many(new_messages.clone())
             .on_conflict(
-                sea_query::OnConflict::column(entity::message::Column::Id)
+                sea_orm::sea_query::OnConflict::column(entity::message::Column::Id)
                     .do_nothing()
                     .to_owned(),
             )

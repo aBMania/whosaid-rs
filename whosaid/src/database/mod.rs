@@ -9,13 +9,17 @@ mod guild;
 mod messages;
 pub(crate) mod user;
 
+#[cfg(test)]
+mod tests;
+
 pub struct Database {
     db: DatabaseConnection,
 }
 
 impl Database {
     pub async fn new() -> Result<Self> {
-        let db_url = env::var("WHOSAID_DATABASE_URL").expect("Expected WHOSAID_DATABASE_URL in the environment");
+        let db_url = env::var("WHOSAID_DATABASE_URL")
+            .expect("Expected WHOSAID_DATABASE_URL in the environment");
 
         let db = SeaOrmDatabase::connect(db_url).await?;
 

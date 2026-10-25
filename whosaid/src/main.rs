@@ -4,7 +4,7 @@ use std::sync::atomic::{AtomicBool, Ordering};
 use std::time::Duration;
 
 use anyhow::Result;
-use dotenv::dotenv;
+use dotenvy::dotenv;
 use serenity::all::{Command, Interaction};
 use serenity::async_trait;
 use serenity::builder::{CreateInteractionResponse, CreateInteractionResponseMessage};
@@ -116,7 +116,8 @@ async fn main() -> Result<()> {
     info!("This will be logged to stdout");
 
     // Configure the client with your Discord bot token in the environment.
-    let token = env::var("WHOSAID_DISCORD_TOKEN").expect("Expected WHOSAID_DISCORD_TOKEN in the environment");
+    let token = env::var("WHOSAID_DISCORD_TOKEN")
+        .expect("Expected WHOSAID_DISCORD_TOKEN in the environment");
     // Set gateway intents, which decides what events the bot will be notified about
     let intents = GatewayIntents::GUILD_MESSAGES
         | GatewayIntents::DIRECT_MESSAGES

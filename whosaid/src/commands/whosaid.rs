@@ -4,11 +4,11 @@ use std::time::Duration;
 
 use crate::database::Database;
 use crate::game::Game;
+use chrono::Local;
 use serenity::builder::*;
 use serenity::futures::stream::StreamExt;
 use serenity::model::prelude::*;
 use serenity::prelude::*;
-use sqlx::types::chrono::Local;
 use tokio::time::sleep;
 
 pub async fn run(
@@ -48,7 +48,8 @@ pub async fn run(
 
     let response = command_interaction.quick_modal(ctx, modal).await?.unwrap();
     let inputs = response.inputs;
-    let (n_question, minimum_quote_length, n_most_active_users) = (&inputs[0], &inputs[1], &inputs[2]);
+    let (n_question, minimum_quote_length, n_most_active_users) =
+        (&inputs[0], &inputs[1], &inputs[2]);
 
     let n_questions = n_question.parse::<u32>();
     let minimum_quote_length = minimum_quote_length.parse::<u32>();
@@ -67,7 +68,14 @@ pub async fn run(
     let minimum_quote_length = minimum_quote_length?;
     let n_most_active_users = n_most_active_users?;
 
-    let game = Game::new(database, guild_id, n_questions, minimum_quote_length, n_most_active_users).await?;
+    let game = Game::new(
+        database,
+        guild_id,
+        n_questions,
+        minimum_quote_length,
+        n_most_active_users,
+    )
+    .await?;
 
     let message = CreateInteractionResponse::Message(
         CreateInteractionResponseMessage::new().content(format!(
@@ -95,13 +103,10 @@ pub async fn run(
 
         for user in users {
             message =
-                message
-                    .button(CreateButton::new(user.id.to_string())
-                    .label(user.name.to_string()));
+                message.button(CreateButton::new(user.id.to_string()).label(user.name.to_string()));
         }
 
-        let mut message = command_interaction
-            .create_followup(ctx, message).await?;
+        let mut message = command_interaction.create_followup(ctx, message).await?;
 
         let mut interaction_stream = message
             .await_component_interaction(&ctx.shard)
@@ -109,7 +114,7 @@ pub async fn run(
             .stream();
 
         let mut responses: Vec<(_, _)> = vec![];
-        
+
         while let Some(interaction) = interaction_stream.next().await {
             let dt = Local::now().signed_duration_since(*message.timestamp);
 

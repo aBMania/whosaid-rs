@@ -1,13 +1,10 @@
-use sea_orm::QueryOrder;
 use sea_orm::ActiveValue::Set;
-use sea_orm::{
-    DbErr, EntityTrait, QueryFilter,
-};
-use sea_query::Expr;
+use sea_orm::QueryOrder;
+use sea_orm::{ColumnTrait, DbErr, EntityTrait, QueryFilter};
 use serenity::all::{ChannelId, GuildChannel as DiscordChannel};
 
-use crate::database::error::DatabaseError;
 use crate::database::Database;
+use crate::database::error::DatabaseError;
 use entity::prelude::*;
 use entity::{channel, message};
 
@@ -18,7 +15,7 @@ impl Database {
     ) -> Result<(), DatabaseError> {
         match Channel::insert(Self::map_channel_to_active_model(discord_channel))
             .on_conflict(
-                sea_query::OnConflict::column(channel::Column::Id)
+                sea_orm::sea_query::OnConflict::column(channel::Column::Id)
                     .do_nothing()
                     .to_owned(),
             )
@@ -41,7 +38,7 @@ impl Database {
 
         match Channel::insert_many(new_channels)
             .on_conflict(
-                sea_query::OnConflict::column(channel::Column::Id)
+                sea_orm::sea_query::OnConflict::column(channel::Column::Id)
                     .do_nothing()
                     .to_owned(),
             )
@@ -81,7 +78,7 @@ impl Database {
         channel_id: ChannelId,
     ) -> Result<Option<message::Model>, DatabaseError> {
         Ok(Message::find()
-            .filter(Expr::col(message::Column::ChannelId).eq(i64::from(channel_id)))
+            .filter(message::Column::ChannelId.eq(i64::from(channel_id)))
             .order_by_asc(message::Column::Timestamp)
             .one(&self.db)
             .await?)
@@ -92,7 +89,7 @@ impl Database {
         channel_id: ChannelId,
     ) -> Result<Option<message::Model>, DatabaseError> {
         Ok(Message::find()
-            .filter(Expr::col(message::Column::ChannelId).eq(i64::from(channel_id)))
+            .filter(message::Column::ChannelId.eq(i64::from(channel_id)))
             .order_by_desc(message::Column::Timestamp)
             .one(&self.db)
             .await?)
