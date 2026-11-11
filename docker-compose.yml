@@ -2,7 +2,7 @@ version: '3'
 
 services:
   database:
-    image: 'postgres:16'  # same major as production (CNPG)
+    image: 'postgres:18'  # same major as production (CNPG)
     ports:
       - 15432:5432
     env_file:
