@@ -1,5 +1,5 @@
 # pinned toolchain (Renovate bumps it); the image ships no OpenSSL, the dependencies use rustls
-FROM clux/muslrust:1.99.1-stable AS chef
+FROM clux/muslrust:1.100.0-stable AS chef
 USER root
 RUN cargo install cargo-chef --locked
 WORKDIR /app
